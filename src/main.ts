@@ -3,6 +3,7 @@ import "./style.css";
 const app: HTMLDivElement = document.querySelector("#app")!;
 
 const gameName = "Shell Tapper";
+let clickCount = 0;
 
 document.title = gameName;
 
@@ -13,3 +14,13 @@ app.append(header);
 const button = document.createElement("button");
 button.innerHTML = "🐢";
 app.append(button);
+
+const clickCountDisplay = document.createElement("p");
+clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount} times.`;
+app.append(clickCountDisplay);
+
+//event listener for button click
+button.addEventListener("click", () => {
+  clickCount++;
+  clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount} times.`;
+});
