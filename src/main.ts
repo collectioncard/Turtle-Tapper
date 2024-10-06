@@ -21,6 +21,16 @@ app.append(clickCountDisplay);
 
 //event listener for button click
 button.addEventListener("click", () => {
+  incrementClickCount();
+});
+
+//automatically click the button every 1 second
+setInterval(() => {
+  incrementClickCount();
+}, 1000);
+
+function incrementClickCount(): void {
   clickCount++;
   clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount} times.`;
-});
+
+}
