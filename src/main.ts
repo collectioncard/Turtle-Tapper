@@ -19,42 +19,46 @@ header.innerHTML = gameName;
 app.append(header);
 
 const mainClickButton = document.createElement("button");
+mainClickButton.id = "mainClickButton";
 mainClickButton.innerHTML = "🐢";
 mainClickButton.addEventListener("click", () => {
-    incrementClickCount(1);
+  incrementClickCount(1);
 });
 app.append(mainClickButton);
 
-
-const upgradeA = document.createElement("button");
-upgradeA.innerHTML = "Upgrade A (0)";
-upgradeA.disabled = true;
-upgradeA.addEventListener("click", () => {
-    growthRate += 0.1;
-    clickCount -= 10;
-    upgradeA.innerHTML = `Upgrade A (${++upgradeAPressCount})`;
+const upgradeStraw = document.createElement("button");
+upgradeStraw.innerHTML = "🥤Purchase Plastic Straw (0)";
+upgradeStraw.disabled = true;
+upgradeStraw.title = "Add one Plastic Straw to the ocean";
+upgradeStraw.addEventListener("click", () => {
+  growthRate += 0.1;
+  clickCount -= 10;
+  upgradeStraw.innerHTML = `🥤Purchase Plastic Straw (${++upgradeAPressCount})`;
 });
-app.append(upgradeA);
+app.append(upgradeStraw);
 
-const upgradeB = document.createElement("button");
-upgradeB.innerHTML = "Upgrade B (0)";
-upgradeB.disabled = true;
-upgradeB.addEventListener("click", () => {
-    growthRate += 2;
-    clickCount -= 100;
-    upgradeB.innerHTML = `Upgrade B (${++upgradeBPressCount})`;
+const upgradeSpecialist = document.createElement("button");
+upgradeSpecialist.innerHTML = "👩‍🔬Hire Aquarist (0)";
+upgradeSpecialist.title = "These guys know where to find the turtles";
+upgradeSpecialist.disabled = true;
+upgradeSpecialist.addEventListener("click", () => {
+  growthRate += 2;
+  clickCount -= 100;
+  upgradeSpecialist.innerHTML = `👩‍🔬Hire Aquarist (${++upgradeBPressCount})`;
 });
-app.append(upgradeB);
+app.append(upgradeSpecialist);
 
-const upgradeC = document.createElement("button");
-upgradeC.innerHTML = "Upgrade C (0)";
-upgradeC.disabled = true;
-upgradeC.addEventListener("click", () => {
-    growthRate += 50;
-    clickCount -= 1000;
-    upgradeC.innerHTML = `Upgrade C (${++upgradeCPressCount})`;
+const upgradeSanctuary = document.createElement("button");
+upgradeSanctuary.innerHTML = "🏝️Purchase Turtle Sanctuary (0)";
+upgradeSanctuary.title =
+  "After gaslighting the turtles into thinking that the ocean is a dangerous place, they’ll never want to leave.";
+upgradeSanctuary.disabled = true;
+upgradeSanctuary.addEventListener("click", () => {
+  growthRate += 50;
+  clickCount -= 1000;
+  upgradeSanctuary.innerHTML = `Upgrade C (${++upgradeCPressCount})`;
 });
-app.append(upgradeC);
+app.append(upgradeSanctuary);
 
 const clickCountDisplay = document.createElement("p");
 clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount} times.`;
@@ -68,24 +72,26 @@ app.append(growthRateDisplay);
 
 //This is essentially the game loop. Should probably be changed to be more obvious
 function incrementClickCount(amtToInc: number): void {
-    clickCount += amtToInc;
-    clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount.toFixed(2)} times.`;
-    growthRateDisplay.innerHTML = `Auto Tap Multiplier: ${growthRate.toFixed(1)}x`;
-    updateButtonStates();
+  clickCount += amtToInc;
+  clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount.toFixed(2)} times.`;
+  growthRateDisplay.innerHTML = `Auto Tap Multiplier: ${growthRate.toFixed(1)}x`;
+  updateButtonStates();
 }
 
 function autoIncrementClickCounter(lastUpdate: number = 0) {
-    const timestamp = performance.now();
-    if (lastUpdate !== 0) {
-        incrementClickCount(((timestamp - lastUpdate) / 1000) * growthRate);
-    }
-    requestAnimationFrame(() => autoIncrementClickCounter(timestamp));
+  const timestamp = performance.now();
+  if (lastUpdate !== 0) {
+    incrementClickCount(((timestamp - lastUpdate) / 1000) * growthRate);
+  }
+  requestAnimationFrame(() => autoIncrementClickCounter(timestamp));
 }
 
 function updateButtonStates() {
-    upgradeA.disabled = clickCount < 10 * Math.pow(1.15, upgradeAPressCount);
-    upgradeB.disabled = clickCount < 100 * Math.pow(1.15, upgradeBPressCount);
-    upgradeC.disabled = clickCount < 1000 * Math.pow(1.15, upgradeCPressCount);
+  upgradeStraw.disabled = clickCount < 10 * Math.pow(1.15, upgradeAPressCount);
+  upgradeSpecialist.disabled =
+    clickCount < 100 * Math.pow(1.15, upgradeBPressCount);
+  upgradeSanctuary.disabled =
+    clickCount < 1000 * Math.pow(1.15, upgradeCPressCount);
 }
 
 //Start the game loop

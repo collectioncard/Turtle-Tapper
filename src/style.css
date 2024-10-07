@@ -74,3 +74,25 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#mainClickButton {
+  font-size: 10em;
+  animation: spin 60s linear infinite;
+  display: block;
+  margin: 0 auto 2rem;
+  padding: 0;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  line-height: 1;
+  background-color: #33817b;
+}
