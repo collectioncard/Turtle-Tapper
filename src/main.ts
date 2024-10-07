@@ -3,11 +3,15 @@ import "./style.css";
 const app: HTMLDivElement = document.querySelector("#app")!;
 
 const gameName = "Shell Tapper";
+
 let clickCount = 0;
 let growthRate = 0;
 
-document.title = gameName;
+let upgradeAPressCount = 0;
+let upgradeBPressCount = 0;
+let upgradeCPressCount = 0;
 
+document.title = gameName;
 
 ///*****BEGIN UI ELEMENTS*****///
 const header = document.createElement("h1");
@@ -17,30 +21,57 @@ app.append(header);
 const mainClickButton = document.createElement("button");
 mainClickButton.innerHTML = "🐢";
 mainClickButton.addEventListener("click", () => {
-    incrementClickCount(1)
+    incrementClickCount(1);
 });
 app.append(mainClickButton);
 
-const marioUpgradeButton = document.createElement("button");
-marioUpgradeButton.innerHTML = "Mario";
-marioUpgradeButton.disabled = true;
-marioUpgradeButton.addEventListener("click", () => {
-    growthRate++;
+
+const upgradeA = document.createElement("button");
+upgradeA.innerHTML = "Upgrade A (0)";
+upgradeA.disabled = true;
+upgradeA.addEventListener("click", () => {
+    growthRate += 0.1;
     clickCount -= 10;
+    upgradeA.innerHTML = `Upgrade A (${++upgradeAPressCount})`;
 });
-app.append(marioUpgradeButton);
+app.append(upgradeA);
+
+const upgradeB = document.createElement("button");
+upgradeB.innerHTML = "Upgrade B (0)";
+upgradeB.disabled = true;
+upgradeB.addEventListener("click", () => {
+    growthRate += 2;
+    clickCount -= 100;
+    upgradeB.innerHTML = `Upgrade B (${++upgradeBPressCount})`;
+});
+app.append(upgradeB);
+
+const upgradeC = document.createElement("button");
+upgradeC.innerHTML = "Upgrade C (0)";
+upgradeC.disabled = true;
+upgradeC.addEventListener("click", () => {
+    growthRate += 50;
+    clickCount -= 1000;
+    upgradeC.innerHTML = `Upgrade C (${++upgradeCPressCount})`;
+});
+app.append(upgradeC);
 
 const clickCountDisplay = document.createElement("p");
 clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount} times.`;
 app.append(clickCountDisplay);
 
+const growthRateDisplay = document.createElement("p");
+growthRateDisplay.innerHTML = `Auto Tap Multiplier: ${growthRate}`;
+app.append(growthRateDisplay);
+
 ///*****END UI ELEMENTS*****///
 
-//This is essentially the game loop.
+//This is essentially the game loop. Should probably be changed to be more obvious
 function incrementClickCount(amtToInc: number): void {
     clickCount += amtToInc;
     clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount.toFixed(2)} times.`;
-    checkButtonStates();
+    growthRateDisplay.innerHTML = `Auto Tap Multiplier: ${growthRate.toFixed(1)}x`;
+    updateButtonStates();
 }
 
 function autoIncrementClickCounter(lastUpdate: number = 0) {
@@ -51,10 +82,11 @@ function autoIncrementClickCounter(lastUpdate: number = 0) {
     requestAnimationFrame(() => autoIncrementClickCounter(timestamp));
 }
 
-function checkButtonStates() {
-    marioUpgradeButton.disabled = clickCount < 10;
+function updateButtonStates() {
+    upgradeA.disabled = clickCount < 10;
+    upgradeB.disabled = clickCount < 100;
+    upgradeC.disabled = clickCount < 1000;
 }
 
 //Start the game loop
 autoIncrementClickCounter();
-
