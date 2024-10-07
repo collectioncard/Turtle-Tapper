@@ -83,9 +83,9 @@ function autoIncrementClickCounter(lastUpdate: number = 0) {
 }
 
 function updateButtonStates() {
-    upgradeA.disabled = clickCount < 10;
-    upgradeB.disabled = clickCount < 100;
-    upgradeC.disabled = clickCount < 1000;
+    upgradeA.disabled = clickCount < 10 * Math.pow(1.15, upgradeAPressCount);
+    upgradeB.disabled = clickCount < 100 * Math.pow(1.15, upgradeBPressCount);
+    upgradeC.disabled = clickCount < 1000 * Math.pow(1.15, upgradeCPressCount);
 }
 
 //Start the game loop
