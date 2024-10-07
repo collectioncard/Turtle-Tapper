@@ -56,7 +56,7 @@ upgradeSanctuary.disabled = true;
 upgradeSanctuary.addEventListener("click", () => {
   growthRate += 50;
   clickCount -= 1000;
-  upgradeSanctuary.innerHTML = `Upgrade C (${++upgradeCPressCount})`;
+  upgradeSanctuary.innerHTML = `️🏝️Purchase Turtle Sanctuary (${++upgradeCPressCount})`;
 });
 app.append(upgradeSanctuary);
 
