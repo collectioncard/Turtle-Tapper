@@ -46,13 +46,14 @@ h1 {
 button {
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  padding: 0.6em 1.5em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  margin: .1em;
 }
 button:hover {
   border-color: #646cff;
@@ -86,7 +87,7 @@ button:focus-visible {
 
 #mainClickButton {
   font-size: 10em;
-  animation: spin 60s linear infinite;
+  animation: spin 100000s linear infinite;
   display: block;
   margin: 0 auto 2rem;
   padding: 0;
