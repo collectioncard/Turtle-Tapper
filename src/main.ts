@@ -10,6 +10,7 @@ let autoClickRate = 0; //The rate at which the turtle is clicked automatically
 interface Item {
   upgradeName: string;
   upgradeDescription: string;
+  baseCost: number;
   currentCost: number;
   growthRate: number;
   purchaseCount: number;
@@ -22,6 +23,7 @@ const availableItems: Item[] = [
     upgradeName: "Plastic Straw",
     upgradeDescription:
       "The turtles will come running out of the ocean when they see this",
+    baseCost: 10,
     currentCost: 10,
     growthRate: 0.1,
     purchaseCount: 0,
@@ -29,6 +31,7 @@ const availableItems: Item[] = [
   {
     upgradeName: "Aquarist",
     upgradeDescription: "These guys know a thing or two about turtles.",
+    baseCost: 100,
     currentCost: 100,
     growthRate: 2,
     purchaseCount: 0,
@@ -37,6 +40,7 @@ const availableItems: Item[] = [
     upgradeName: "Turtle Sanctuary",
     upgradeDescription:
       "After gaslighting the turtles into thinking the ocean is unsafe, they'll never want to leave!",
+    baseCost: 500,
     currentCost: 500,
     growthRate: 50,
     purchaseCount: 0,
@@ -44,6 +48,7 @@ const availableItems: Item[] = [
   {
     upgradeName: "Mario",
     upgradeDescription: "He is somewhat related to turtles, right?",
+    baseCost: 1000,
     currentCost: 1000,
     growthRate: 75,
     purchaseCount: 0,
@@ -52,6 +57,7 @@ const availableItems: Item[] = [
     upgradeName: "Earth 2",
     upgradeDescription:
       "Who needs these turtles? Go to earth 2 with your current growth rate. Resets progress",
+    baseCost: 10000,
     currentCost: 10000,
     growthRate: 0,
     purchaseCount: 0,
@@ -61,11 +67,19 @@ const availableItems: Item[] = [
         if (item.upgradeName === "Earth 2") {
           return;
         }
+
         item.purchaseCount = 0;
+        item.currentCost = item.baseCost;
+
         const button = document.querySelector(
           `button[id='upgradeButton-${item.upgradeName}']`,
         ) as HTMLButtonElement;
-        button.innerHTML = `${item.upgradeName} (${item.purchaseCount})`;
+
+        button.innerHTML = `
+            <div>${item.upgradeName} (${++item.purchaseCount})</div>
+            <div style="font-size: 0.8em;">${item.upgradeDescription}</div>
+            <div style="font-size: 0.8em;">Cost: ${item.currentCost.toFixed(2)}</div>
+        `;
       }, 0);
     },
   },
