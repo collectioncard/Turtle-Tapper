@@ -1,7 +1,6 @@
 import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
-
 const gameName = "Shell Tapper";
 
 let clickCount = 0; //The number of times the turtle has been clicked
@@ -61,31 +60,11 @@ const availableItems: Item[] = [
     currentCost: 10000,
     growthRate: 0,
     purchaseCount: 0,
-    specialAction: () => {
-      clickCount = 0;
-      availableItems.forEach((item) => {
-        if (item.upgradeName === "Earth 2") {
-          return;
-        }
-
-        item.purchaseCount = 0;
-        item.currentCost = item.baseCost;
-
-        const button = document.querySelector(
-          `button[id='upgradeButton-${item.upgradeName}']`,
-        ) as HTMLButtonElement;
-
-        button.innerHTML = `
-            <div>${item.upgradeName} (${++item.purchaseCount})</div>
-            <div style="font-size: 0.8em;">${item.upgradeDescription}</div>
-            <div style="font-size: 0.8em;">Cost: ${item.currentCost.toFixed(2)}</div>
-        `;
-      }, 0);
-    },
+    specialAction: prestige,
   },
 ];
 
-///*****BEGIN UI ELEMENTS*****///
+////***** UI ELEMENTS *****////
 const header = document.createElement("h1");
 header.innerHTML = gameName;
 app.append(header);
@@ -99,25 +78,48 @@ mainClickButton.addEventListener("click", () => {
 app.append(mainClickButton);
 
 const clickCountDisplay = document.createElement("p");
-clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount} times.`;
 app.append(clickCountDisplay);
 
 const growthRateDisplay = document.createElement("p");
-growthRateDisplay.innerHTML = `Auto Tap Multiplier: ${autoClickRate}`;
 app.append(growthRateDisplay);
-///*****END UI ELEMENTS*****///
+
+////***** UTILITIES *****////
 
 //Slowly increases the speed of the turtle spin as the growth rate increases
 function updateTurtleSpinRate(): void {
-  const mainClickButton = document.getElementById("mainClickButton");
-  if (mainClickButton && autoClickRate > 0) {
+  if (autoClickRate > 0) {
     const newDuration = Math.max(600 / (1 + autoClickRate), 0.1);
     mainClickButton.style.animationDuration = `${newDuration}s`;
-    console.log(newDuration);
   }
 }
 
-//Game loop
+//Resets all game progress except for the Earth 2 upgrade
+function prestige() {
+  clickCount = 0;
+  availableItems.forEach((item) => {
+    if (item.upgradeName !== "Earth 2") {
+      item.purchaseCount = 0;
+      item.currentCost = item.baseCost;
+      updateButtonUI(item);
+    }
+  });
+}
+
+//updates an item's button to reflect its current state
+function updateButtonUI(item: Item) {
+  const button = document.querySelector(
+    `button[id='upgradeButton-${item.upgradeName}']`,
+  ) as HTMLButtonElement;
+
+  button.innerHTML = `
+    <div>${item.upgradeName} (${item.purchaseCount})</div>
+    <div style="font-size: 0.8em;">${item.upgradeDescription}</div>
+    <div style="font-size: 0.8em;">Cost: ${item.currentCost.toFixed(2)}</div>
+  `;
+}
+
+////**** GAME LOGIC ****////
+
 function tick(lastCall: number = 0): void {
   const callTime = performance.now();
 
@@ -148,7 +150,7 @@ function tick(lastCall: number = 0): void {
   requestAnimationFrame(() => tick(callTime));
 }
 
-//Executed at game start
+////**** INITIALIZATION ****////
 
 document.title = gameName;
 
@@ -156,32 +158,25 @@ document.title = gameName;
 availableItems.forEach((item) => {
   const button = document.createElement("button");
 
-  button.innerHTML = `
-        <div>${item.upgradeName} (${item.purchaseCount})</div>
-        <div style="font-size: 0.8em;">${item.upgradeDescription}</div>
-        <div style="font-size: 0.8em;">Cost: ${item.currentCost.toFixed(2)}</div>
-    `;
-
   button.disabled = true;
   button.title = `Purchase one ${item.upgradeName}`;
   button.id = "upgradeButton-" + item.upgradeName;
 
   button.addEventListener("click", () => {
+    if (clickCount < item.currentCost) {
+      return;
+    }
+
     autoClickRate += item.growthRate;
     clickCount -= item.currentCost;
     item.currentCost = item.currentCost * 1.15;
-    button.innerHTML = `
-            <div>${item.upgradeName} (${++item.purchaseCount})</div>
-            <div style="font-size: 0.8em;">${item.upgradeDescription}</div>
-            <div style="font-size: 0.8em;">Cost: ${item.currentCost.toFixed(2)}</div>
-        `;
-
-    if (item.specialAction) {
-      item.specialAction();
-    }
+    item.purchaseCount++;
+    updateButtonUI(item);
+    item.specialAction?.();
   });
 
   app.append(button);
+  updateButtonUI(item);
 });
 
 //start the game loop
