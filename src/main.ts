@@ -10,62 +10,68 @@ const COST_MULTIPLIER = 1.15; //The multiplier for the cost of upgrades
 const MIN_SPIN_DUR = 0.1; //The minimum duration for the turtle spin animation
 const MAX_SPIN_DUR = 600; //The maximum duration for the turtle spin animation
 
-interface Item {
-  upgradeName: string;
-  upgradeDescription: string;
-  baseCost: number;
-  currentCost: number;
-  growthRate: number;
-  purchaseCount: number;
-  specialAction?: () => void;
+class Item {
+  constructor(
+      public upgradeName: string,
+      public upgradeDescription: string,
+      public baseCost: number,
+      public currentCost: number,
+      public growthRate: number,
+      public purchaseCount: number = 0,
+      public specialAction?: () => void
+  ) {}
+
+  purchase() {
+    this.purchaseCount++;
+    this.currentCost *= COST_MULTIPLIER;
+    this.specialAction?.();
+  }
+
+  reset() {
+    this.purchaseCount = 0;
+    this.currentCost = this.baseCost;
+  }
 }
 
-//Define the upgrades to be created automatically
+// Define the upgrades to be created automatically
 const availableItems: Item[] = [
-  {
-    upgradeName: "Plastic Straw",
-    upgradeDescription:
+  new Item(
+      "Plastic Straw",
       "The turtles will come running out of the ocean when they see this",
-    baseCost: 10,
-    currentCost: 10,
-    growthRate: 0.1,
-    purchaseCount: 0,
-  },
-  {
-    upgradeName: "Aquarist",
-    upgradeDescription: "These guys know a thing or two about turtles.",
-    baseCost: 100,
-    currentCost: 100,
-    growthRate: 2,
-    purchaseCount: 0,
-  },
-  {
-    upgradeName: "Turtle Sanctuary",
-    upgradeDescription:
+      10,
+      10,
+      0.1
+  ),
+  new Item(
+      "Aquarist",
+      "These guys know a thing or two about turtles.",
+      100,
+      100,
+      2
+  ),
+  new Item(
+      "Turtle Sanctuary",
       "After gaslighting the turtles into thinking the ocean is unsafe, they'll never want to leave!",
-    baseCost: 500,
-    currentCost: 500,
-    growthRate: 50,
-    purchaseCount: 0,
-  },
-  {
-    upgradeName: "Mario",
-    upgradeDescription: "He is somewhat related to turtles, right?",
-    baseCost: 1000,
-    currentCost: 1000,
-    growthRate: 75,
-    purchaseCount: 0,
-  },
-  {
-    upgradeName: "Earth 2",
-    upgradeDescription:
+      500,
+      500,
+      50
+  ),
+  new Item(
+      "Mario",
+      "He is somewhat related to turtles, right?",
+      1000,
+      1000,
+      75
+  ),
+  new Item(
+      "Earth 2",
       "Who needs these turtles? Go to earth 2 with your current growth rate. Resets progress",
-    baseCost: 10000,
-    currentCost: 10000,
-    growthRate: 0,
-    purchaseCount: 0,
-    specialAction: prestige,
-  },
+      10000,
+      10000,
+      0,
+      0,
+      prestige
+  ),
 ];
 
 ////***** UI ELEMENTS *****////
@@ -102,8 +108,7 @@ function prestige() {
   clickCount = 0;
   availableItems.forEach((item) => {
     if (item.upgradeName !== "Earth 2") {
-      item.purchaseCount = 0;
-      item.currentCost = item.baseCost;
+      item.reset();
       updateButtonUI(item);
     }
   });
@@ -173,10 +178,8 @@ availableItems.forEach((item) => {
 
     autoClickRate += item.growthRate;
     clickCount -= item.currentCost;
-    item.currentCost = item.currentCost * COST_MULTIPLIER;
-    item.purchaseCount++;
+    item.purchase();
     updateButtonUI(item);
-    item.specialAction?.();
   });
 
   app.append(button);
