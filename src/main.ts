@@ -6,6 +6,10 @@ const gameName = "Shell Tapper";
 let clickCount = 0; //The number of times the turtle has been clicked
 let autoClickRate = 0; //The rate at which the turtle is clicked automatically
 
+const COST_MULTIPLIER = 1.15; //The multiplier for the cost of upgrades
+const MIN_SPIN_DUR = 0.1; //The minimum duration for the turtle spin animation
+const MAX_SPIN_DUR = 600; //The maximum duration for the turtle spin animation
+
 interface Item {
   upgradeName: string;
   upgradeDescription: string;
@@ -88,7 +92,7 @@ app.append(growthRateDisplay);
 //Slowly increases the speed of the turtle spin as the growth rate increases
 function updateTurtleSpinRate(): void {
   if (autoClickRate > 0) {
-    const newDuration = Math.max(600 / (1 + autoClickRate), 0.1);
+    const newDuration = Math.max(MAX_SPIN_DUR / (1 + autoClickRate), MIN_SPIN_DUR);
     mainClickButton.style.animationDuration = `${newDuration}s`;
   }
 }
@@ -169,7 +173,7 @@ availableItems.forEach((item) => {
 
     autoClickRate += item.growthRate;
     clickCount -= item.currentCost;
-    item.currentCost = item.currentCost * 1.15;
+    item.currentCost = item.currentCost * COST_MULTIPLIER;
     item.purchaseCount++;
     updateButtonUI(item);
     item.specialAction?.();
