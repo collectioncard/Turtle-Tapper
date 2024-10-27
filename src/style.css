@@ -96,4 +96,10 @@ button:focus-visible {
   border-radius: 50%;
   line-height: 1;
   background-color: #33817b;
+  animation-duration: 600s;
 }
+
+.upgrade-button {
+  font-size: 0.8em;
+}
+

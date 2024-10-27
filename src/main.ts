@@ -3,12 +3,12 @@ import "./style.css";
 const app: HTMLDivElement = document.querySelector("#app")!;
 const gameName = "Shell Tapper";
 
-let clickCount = 0; //The number of times the turtle has been clicked
-let autoClickRate = 0; //The rate at which the turtle is clicked automatically
+let clickCount = 0; // The number of times the turtle has been clicked
+let autoClickRate = 0; // The rate at which the turtle is clicked automatically
 
-const COST_MULTIPLIER = 1.15; //The multiplier for the cost of upgrades
-const MIN_SPIN_DUR = 0.1; //The minimum duration for the turtle spin animation
-const MAX_SPIN_DUR = 600; //The maximum duration for the turtle spin animation
+const COST_MULTIPLIER = 1.15; // The multiplier for the cost of upgrades
+const MIN_SPIN_DUR = 0.1; // The minimum duration for the turtle spin animation
+const MAX_SPIN_DUR = 600; // The maximum duration for the turtle spin animation
 
 class Item {
   constructor(
@@ -95,7 +95,7 @@ app.append(growthRateDisplay);
 
 ////***** UTILITIES *****////
 
-//Slowly increases the speed of the turtle spin as the growth rate increases
+// Slowly increases the speed of the turtle spin as the growth rate increases
 function updateTurtleSpinRate(): void {
   if (autoClickRate > 0) {
     const newDuration = Math.max(MAX_SPIN_DUR / (1 + autoClickRate), MIN_SPIN_DUR);
@@ -103,7 +103,7 @@ function updateTurtleSpinRate(): void {
   }
 }
 
-//Resets all game progress except for the Earth 2 upgrade
+// Resets all game progress except for the Earth 2 upgrade
 function prestige() {
   clickCount = 0;
   availableItems.forEach((item) => {
@@ -114,16 +114,16 @@ function prestige() {
   });
 }
 
-//updates an item's button to reflect its current state
+// Updates an item's button to reflect its current state
 function updateButtonUI(item: Item) {
   const button = document.querySelector(
-    `button[id='upgradeButton-${item.upgradeName}']`,
+      `button[id="upgradeButton-${item.upgradeName}"]`
   ) as HTMLButtonElement;
 
   button.innerHTML = `
     <div>${item.upgradeName} (${item.purchaseCount})</div>
-    <div style="font-size: 0.8em;">${item.upgradeDescription}</div>
-    <div style="font-size: 0.8em;">Cost: ${item.currentCost.toFixed(2)}</div>
+    <div class="upgrade-button">${item.upgradeDescription}</div>
+    <div class="upgrade-button">Cost: ${item.currentCost.toFixed(2)}</div>
   `;
 }
 
@@ -139,17 +139,17 @@ function tick(lastCall: number = 0): void {
 
   const singleFrameTime = (callTime - lastCall) / 1000;
 
-  //Add the auto clicker growth rate to the click count
+  // Add the auto clicker growth rate to the click count
   clickCount += singleFrameTime * autoClickRate;
 
-  //update stat counters
+  // Update stat counters
   clickCountDisplay.innerHTML = `You've tapped the turtle ${clickCount.toFixed(2)} times.`;
   growthRateDisplay.innerHTML = `Auto Tap Multiplier: ${autoClickRate.toFixed(1)}x`;
 
-  //update buttons based on the current click count
+  // Update buttons based on the current click count
   availableItems.forEach((item) => {
     const button = document.querySelector(
-      `button[id='upgradeButton-${item.upgradeName}']`,
+        `button[id="upgradeButton-${item.upgradeName}"]`
     ) as HTMLButtonElement;
     button.disabled = clickCount < item.currentCost;
   });
@@ -163,13 +163,13 @@ function tick(lastCall: number = 0): void {
 
 document.title = gameName;
 
-//Automatically create buttons for each upgrade
+// Automatically create buttons for each upgrade
 availableItems.forEach((item) => {
   const button = document.createElement("button");
 
   button.disabled = true;
   button.title = `Purchase one ${item.upgradeName}`;
-  button.id = "upgradeButton-" + item.upgradeName;
+  button.id = `upgradeButton-${item.upgradeName}`;
 
   button.addEventListener("click", () => {
     if (clickCount < item.currentCost) {
@@ -186,5 +186,5 @@ availableItems.forEach((item) => {
   updateButtonUI(item);
 });
 
-//start the game loop
+// Start the game loop
 tick();
