@@ -85,6 +85,7 @@ mainClickButton.innerHTML = "🐢";
 mainClickButton.addEventListener("click", () => {
   clickCount++;
   saveGame();
+  createFlyingTurtle();
 });
 app.append(mainClickButton);
 
@@ -129,6 +130,25 @@ function updateButtonUI(item: Item) {
     <div class="upgrade-button">${item.upgradeDescription}</div>
     <div class="upgrade-button">Cost: ${item.currentCost.toFixed(2)}</div>
   `;
+}
+
+function createFlyingTurtle() {
+  const turtleFlier = document.createElement("div");
+  turtleFlier.classList.add("flying-turtle");
+  turtleFlier.innerHTML = "🐢";
+
+  const rect = mainClickButton.getBoundingClientRect();
+  turtleFlier.style.left = `${rect.left + rect.width / 2}px`;
+  turtleFlier.style.top = `${rect.top + rect.height / 2}px`;
+
+  const angle = Math.random() * 360;
+  turtleFlier.style.setProperty("--angle", `${angle}deg`);
+
+  document.body.appendChild(turtleFlier);
+
+  turtleFlier.addEventListener("animationend", () => {
+    turtleFlier.remove();
+  });
 }
 
 ////**** GAME LOGIC ****////
