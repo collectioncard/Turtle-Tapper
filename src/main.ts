@@ -12,13 +12,13 @@ const MAX_SPIN_DUR = 600; // The maximum duration for the turtle spin animation
 
 class Item {
   constructor(
-      public upgradeName: string,
-      public upgradeDescription: string,
-      public baseCost: number,
-      public currentCost: number,
-      public growthRate: number,
-      public purchaseCount: number = 0,
-      public specialAction?: () => void
+    public upgradeName: string,
+    public upgradeDescription: string,
+    public baseCost: number,
+    public currentCost: number,
+    public growthRate: number,
+    public purchaseCount: number = 0,
+    public specialAction?: () => void,
   ) {}
 
   purchase() {
@@ -36,41 +36,41 @@ class Item {
 // Define the upgrades to be created automatically
 const availableItems: Item[] = [
   new Item(
-      "Plastic Straw",
-      "The turtles will come running out of the ocean when they see this",
-      10,
-      10,
-      0.1
+    "Plastic Straw",
+    "The turtles will come running out of the ocean when they see this",
+    10,
+    10,
+    0.1,
   ),
   new Item(
-      "Aquarist",
-      "These guys know a thing or two about turtles.",
-      100,
-      100,
-      2
+    "Aquarist",
+    "These guys know a thing or two about turtles.",
+    100,
+    100,
+    2,
   ),
   new Item(
-      "Turtle Sanctuary",
-      "After gaslighting the turtles into thinking the ocean is unsafe, they'll never want to leave!",
-      500,
-      500,
-      50
+    "Turtle Sanctuary",
+    "After gaslighting the turtles into thinking the ocean is unsafe, they'll never want to leave!",
+    500,
+    500,
+    50,
   ),
   new Item(
-      "Mario",
-      "He is somewhat related to turtles, right?",
-      1000,
-      1000,
-      75
+    "Mario",
+    "He is somewhat related to turtles, right?",
+    1000,
+    1000,
+    75,
   ),
   new Item(
-      "Earth 2",
-      "Who needs these turtles? Go to earth 2 with your current growth rate. Resets progress",
-      10000,
-      10000,
-      0,
-      0,
-      prestige
+    "Earth 2",
+    "Who needs these turtles? Go to earth 2 with your current growth rate. Resets progress",
+    10000,
+    10000,
+    0,
+    0,
+    prestige,
   ),
 ];
 
@@ -84,6 +84,7 @@ mainClickButton.id = "mainClickButton";
 mainClickButton.innerHTML = "🐢";
 mainClickButton.addEventListener("click", () => {
   clickCount++;
+  saveGame();
 });
 app.append(mainClickButton);
 
@@ -98,7 +99,10 @@ app.append(growthRateDisplay);
 // Slowly increases the speed of the turtle spin as the growth rate increases
 function updateTurtleSpinRate(): void {
   if (autoClickRate > 0) {
-    const newDuration = Math.max(MAX_SPIN_DUR / (1 + autoClickRate), MIN_SPIN_DUR);
+    const newDuration = Math.max(
+      MAX_SPIN_DUR / (1 + autoClickRate),
+      MIN_SPIN_DUR,
+    );
     mainClickButton.style.animationDuration = `${newDuration}s`;
   }
 }
@@ -117,7 +121,7 @@ function prestige() {
 // Updates an item's button to reflect its current state
 function updateButtonUI(item: Item) {
   const button = document.querySelector(
-      `button[id="upgradeButton-${item.upgradeName}"]`
+    `button[id="upgradeButton-${item.upgradeName}"]`,
   ) as HTMLButtonElement;
 
   button.innerHTML = `
@@ -149,7 +153,7 @@ function tick(lastCall: number = 0): void {
   // Update buttons based on the current click count
   availableItems.forEach((item) => {
     const button = document.querySelector(
-        `button[id="upgradeButton-${item.upgradeName}"]`
+      `button[id="upgradeButton-${item.upgradeName}"]`,
     ) as HTMLButtonElement;
     button.disabled = clickCount < item.currentCost;
   });
@@ -157,6 +161,47 @@ function tick(lastCall: number = 0): void {
   updateTurtleSpinRate();
 
   requestAnimationFrame(() => tick(callTime));
+}
+
+////**** AUTOSAVE AND LOAD ****////
+
+function saveGame() {
+  const gameState = {
+    clickCount,
+    autoClickRate,
+    items: availableItems.map((item) => ({
+      upgradeName: item.upgradeName,
+      currentCost: item.currentCost,
+      purchaseCount: item.purchaseCount,
+    })),
+  };
+  localStorage.setItem("shellTapperGameState", JSON.stringify(gameState));
+}
+
+interface SavedItem {
+  upgradeName: string;
+  currentCost: number;
+  purchaseCount: number;
+}
+
+function loadGame() {
+  const savedState = localStorage.getItem("shellTapperGameState");
+  if (savedState) {
+    const gameState = JSON.parse(savedState);
+    clickCount = gameState.clickCount;
+    autoClickRate = gameState.autoClickRate;
+
+    gameState.items.forEach((savedItem: SavedItem) => {
+      const item = availableItems.find(
+        (i) => i.upgradeName === savedItem.upgradeName,
+      );
+      if (item) {
+        item.currentCost = savedItem.currentCost;
+        item.purchaseCount = savedItem.purchaseCount;
+        updateButtonUI(item);
+      }
+    });
+  }
 }
 
 ////**** INITIALIZATION ****////
@@ -180,11 +225,15 @@ availableItems.forEach((item) => {
     clickCount -= item.currentCost;
     item.purchase();
     updateButtonUI(item);
+    saveGame();
   });
 
   app.append(button);
   updateButtonUI(item);
 });
+
+// Load saved game state
+loadGame();
 
 // Start the game loop
 tick();
